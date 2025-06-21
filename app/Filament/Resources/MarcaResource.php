@@ -23,11 +23,16 @@ class MarcaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('descripcion')
-                    ->maxLength(255),
+                Forms\Components\Section::make('Datos de la marca')
+                    ->schema([
+                        Forms\Components\TextInput::make('nombre')
+                            ->placeholder('Nombre de la marca')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('descripcion')
+                            ->placeholder('Descripci\xC3\xB3n de la marca')
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 

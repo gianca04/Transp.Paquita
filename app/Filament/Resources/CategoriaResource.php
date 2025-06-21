@@ -23,11 +23,16 @@ class CategoriaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('descripcion')
-                    ->maxLength(255),
+                Forms\Components\Section::make('Informaci\xC3\xB3n de la categor\xC3\xA1a')
+                    ->schema([
+                        Forms\Components\TextInput::make('nombre')
+                            ->placeholder('Nombre de la categor\xC3\xADa')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('descripcion')
+                            ->placeholder('Descripci\xC3\xB3n de la categor\xC3\xADa')
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 

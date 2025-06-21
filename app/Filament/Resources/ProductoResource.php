@@ -23,31 +23,46 @@ class ProductoResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('area_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('sub_area_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('categoria_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('marca_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('proveedor_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('nombre')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('descripcion')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('foto')
-                    ->maxLength(255),
+                Forms\Components\Section::make('Referencias')
+                    ->schema([
+                        Forms\Components\TextInput::make('area_id')
+                            ->placeholder('ID del \xC3\xA1rea')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('sub_area_id')
+                            ->placeholder('ID de la sub\xC3\xA1rea')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('categoria_id')
+                            ->placeholder('ID de la categor\xC3\xADa')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('marca_id')
+                            ->placeholder('ID de la marca')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('proveedor_id')
+                            ->placeholder('ID del proveedor')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('user_id')
+                            ->placeholder('ID del usuario')
+                            ->required()
+                            ->numeric(),
+                    ]),
+                Forms\Components\Section::make('Detalles del producto')
+                    ->schema([
+                        Forms\Components\TextInput::make('nombre')
+                            ->placeholder('Nombre del producto')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('descripcion')
+                            ->placeholder('Descripci\xC3\xB3n del producto')
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('foto')
+                            ->placeholder('URL de la foto')
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 
