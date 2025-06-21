@@ -23,25 +23,36 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nombre')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('apellido')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('tipo_documento'),
-                Forms\Components\TextInput::make('numero_documento')
-                    ->maxLength(255),
+                Forms\Components\Section::make('Datos del usuario')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->placeholder('Nombre de usuario')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->placeholder('Correo electr\xC3\xB3nico')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\DateTimePicker::make('email_verified_at')
+                            ->placeholder('Fecha de verificaci\xC3\xB3n'),
+                        Forms\Components\TextInput::make('password')
+                            ->placeholder('Contrase\xC3\xB1a')
+                            ->password()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('nombre')
+                            ->placeholder('Nombre')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('apellido')
+                            ->placeholder('Apellido')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('tipo_documento')
+                            ->placeholder('Tipo de documento'),
+                        Forms\Components\TextInput::make('numero_documento')
+                            ->placeholder('N\xC3\xBAmero de documento')
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 

@@ -23,18 +23,25 @@ class ProveedorResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('telefono')
-                    ->tel()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('direccion')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Datos del proveedor')
+                    ->schema([
+                        Forms\Components\TextInput::make('nombre')
+                            ->placeholder('Nombre del proveedor')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('telefono')
+                            ->placeholder('Tel\xC3\xA9fono de contacto')
+                            ->tel()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('direccion')
+                            ->placeholder('Direcci\xC3\xB3n del proveedor')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->placeholder('Correo electr\xC3\xB3nico')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 

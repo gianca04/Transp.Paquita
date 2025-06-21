@@ -23,22 +23,31 @@ class SalidaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('producto_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('cantidad')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\DatePicker::make('fecha')
-                    ->required(),
-                Forms\Components\TextInput::make('hora')
-                    ->required(),
-                Forms\Components\TextInput::make('destino')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Datos de la salida')
+                    ->schema([
+                        Forms\Components\TextInput::make('user_id')
+                            ->placeholder('ID del usuario')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('producto_id')
+                            ->placeholder('ID del producto')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('cantidad')
+                            ->placeholder('Cantidad')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\DatePicker::make('fecha')
+                            ->placeholder('Fecha de salida')
+                            ->required(),
+                        Forms\Components\TextInput::make('hora')
+                            ->placeholder('Hora de salida')
+                            ->required(),
+                        Forms\Components\TextInput::make('destino')
+                            ->placeholder('Destino de la mercader\xC3\xADa')
+                            ->required()
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 

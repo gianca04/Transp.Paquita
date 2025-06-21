@@ -23,11 +23,16 @@ class AreaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('descripcion')
-                    ->maxLength(255),
+                Forms\Components\Section::make('Informaci\xC3\xB3n del \xC3\xA1rea')
+                    ->schema([
+                        Forms\Components\TextInput::make('nombre')
+                            ->placeholder('Nombre del \xC3\xA1rea')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('descripcion')
+                            ->placeholder('Descripci\xC3\xB3n del \xC3\xA1rea')
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 

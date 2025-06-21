@@ -23,22 +23,32 @@ class EntradaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('producto_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\DateTimePicker::make('fecha'),
-                Forms\Components\TextInput::make('hora'),
-                Forms\Components\TextInput::make('tipo_documento')
-                    ->required(),
-                Forms\Components\TextInput::make('numero_documento')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('cantidad')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Section::make('Detalles de la entrada')
+                    ->schema([
+                        Forms\Components\TextInput::make('user_id')
+                            ->placeholder('ID de usuario')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('producto_id')
+                            ->placeholder('ID del producto')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\DateTimePicker::make('fecha')
+                            ->placeholder('Fecha de la entrada'),
+                        Forms\Components\TextInput::make('hora')
+                            ->placeholder('Hora de la entrada'),
+                        Forms\Components\TextInput::make('tipo_documento')
+                            ->placeholder('Tipo de documento')
+                            ->required(),
+                        Forms\Components\TextInput::make('numero_documento')
+                            ->placeholder('N\xC3\xBAmero de documento')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('cantidad')
+                            ->placeholder('Cantidad de productos')
+                            ->required()
+                            ->numeric(),
+                    ]),
             ]);
     }
 
