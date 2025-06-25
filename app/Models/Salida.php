@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Salida extends Model
 {
@@ -41,5 +42,21 @@ class Salida extends Model
             'destino' => 'required|string|max:255',  // Validar que destino sea requerido y tenga un formato correcto
             'cantidad' => 'required|integer|min:1',  // Asegurarse de que cantidad sea un número entero mayor que 0
         ];
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($salida) {
+            // Asignar el ID del usuario autenticado
+            $salida->user_id = optional(Auth::user())->id;
+        });
+        static::created(function ($salida) {
+            // Buscar el stock del producto
+            $stock = Stock::where('producto_id', $salida->producto_id)->first();
+            if ($stock) {
+                $stock->cantidad -= $salida->cantidad;
+                $stock->save();
+            }
+        });
     }
 }

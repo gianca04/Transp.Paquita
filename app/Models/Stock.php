@@ -24,6 +24,17 @@ class Stock extends Model
         'maximo',
     ];
 
+
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
+
+    public function subArea()
+    {
+        return $this->belongsTo(SubArea::class, 'sub_area_id');
+    }
     // Reglas de validación
     public static function rules()
     {

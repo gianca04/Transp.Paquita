@@ -12,12 +12,19 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Termwind\Actions\StyleToMethod;
 
 class ProveedorResource extends Resource
 {
     protected static ?string $model = Proveedor::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-truck';
+
+    protected static ?string $pluralLabel = 'Proveedores';
+
+    protected static ?string $modelLabel = 'Proveedor';
+
+    protected static ?string $navigationGroup = 'Proveedores y Usuarios';
 
     public static function form(Form $form): Form
     {
@@ -28,49 +35,86 @@ class ProveedorResource extends Resource
                         Forms\Components\TextInput::make('nombre')
                             ->placeholder('Nombre del proveedor')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-user'), // Adding a prefix icon for "Nombre del proveedor"
+
                         Forms\Components\TextInput::make('telefono')
-                            ->placeholder('Tel\xC3\xA9fono de contacto')
+                            ->placeholder('Teléfono de contacto')
                             ->tel()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-phone'), // Adding a phone icon
+
                         Forms\Components\TextInput::make('direccion')
-                            ->placeholder('Direcci\xC3\xB3n del proveedor')
-                            ->maxLength(255),
+                            ->placeholder('Dirección del proveedor')
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-map-pin'), // Adding a location icon
+
                         Forms\Components\TextInput::make('email')
-                            ->placeholder('Correo electr\xC3\xB3nico')
+                            ->placeholder('Correo electrónico')
                             ->email()
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-envelope-open'), // Adding an email icon
+
                     ]),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nombre')
-                    ->searchable(),
+                    ->label('Nombre') // Etiqueta en español
+                    ->searchable()
+                    ->icon('heroicon-s-user') // Icono relacionado
+                    ->weight(1), // Peso de la columna
+
                 Tables\Columns\TextColumn::make('telefono')
-                    ->searchable(),
+                    ->label('Teléfono') // Etiqueta en español
+                    ->searchable()
+                    ->icon('heroicon-s-phone') // Icono relacionado
+                    ->weight(2), // Peso de la columna
+
                 Tables\Columns\TextColumn::make('direccion')
-                    ->searchable(),
+                    ->label('Dirección') // Etiqueta en español
+                    ->searchable()
+                    ->icon('heroicon-s-home') // Icono relacionado
+                    ->weight(3), // Peso de la columna
+
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->label('Correo Electrónico') // Etiqueta en español
+                    ->searchable()
+                    ->icon('heroicon-s-mail') // Icono relacionado
+                    ->weight(4), // Peso de la columna
+
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Fecha de Creación') // Etiqueta en español
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->weight(5), // Peso de la columna
+
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Fecha de Actualización') // Etiqueta en español
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->weight(6), // Peso de la columna
+
+
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

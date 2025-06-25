@@ -17,24 +17,29 @@ class CategoriaResource extends Resource
 {
     protected static ?string $model = Categoria::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
+
+    protected static ?string $navigationGroup = 'Gestión de Inventarios y Productos';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informaci\xC3\xB3n de la categor\xC3\xA1a')
+                Forms\Components\Section::make('Información de la categoría')
                     ->schema([
                         Forms\Components\TextInput::make('nombre')
-                            ->placeholder('Nombre de la categor\xC3\xADa')
+                            ->placeholder('Introduce el nombre de la categoría')
+                            ->prefixIcon('heroicon-s-tag') // Usando un icono de Heroicons, puedes ajustarlo según lo que necesites
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('descripcion')
-                            ->placeholder('Descripci\xC3\xB3n de la categor\xC3\xADa')
+                            ->placeholder('Añadir una breve descripción de la categoría')
+                             // Puedes usar otros iconos o un archivo SVG
                             ->maxLength(255),
                     ]),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
@@ -57,7 +62,15 @@ class CategoriaResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

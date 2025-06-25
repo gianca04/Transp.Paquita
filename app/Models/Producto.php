@@ -26,6 +26,13 @@ class Producto extends Model
         'foto',
     ];
 
+
+    public function stock()
+    {
+        return $this->hasOne(Stock::class);
+    }
+
+    // ...existing code...
     /**
      * Relación con la tabla Areas.
      */
@@ -74,17 +81,13 @@ class Producto extends Model
         return $this->belongsTo(User::class);
     }
 
-        public function productos()
-    {
-        return $this->hasMany(Producto::class);
-    }
 
-        public function entradas()
+    public function entradas()
     {
         return $this->hasMany(Entrada::class, 'producto_id');
     }
 
-        public function salidas()
+    public function salidas()
     {
         return $this->hasMany(Salida::class, 'producto_id');
     }

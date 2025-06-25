@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth; // ¡Esta es la que necesitas!
 
 class Entrada extends Model
 {
@@ -40,5 +41,21 @@ class Entrada extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'producto_id');
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($entrada) {
+            // Asignar el ID del usuario autenticado
+            $entrada->user_id = optional(Auth::user())->id;
+        });
+        static::created(function ($entrada) {
+            // Buscar el stock del producto
+            $stock = Stock::where('producto_id', $entrada->producto_id)->first();
+            if ($stock) {
+                $stock->cantidad += $entrada->cantidad;
+                $stock->save();
+            }
+        });
     }
 }

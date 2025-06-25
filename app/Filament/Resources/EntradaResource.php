@@ -1,112 +1,62 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Widgets;
 
-use App\Filament\Resources\EntradaResource\Pages;
-use App\Filament\Resources\EntradaResource\RelationManagers;
 use App\Models\Entrada;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\Salida;
+use Filament\Widgets\LineChartWidget;
 
-class EntradaResource extends Resource
+class EntradaResource extends LineChartWidget
 {
-    protected static ?string $model = Entrada::class;
+    protected static ?string $heading = 'Entradas vs Salidas por Mes';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function form(Form $form): Form
+    protected function getData(): array
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Detalles de la entrada')
-                    ->schema([
-                        Forms\Components\TextInput::make('user_id')
-                            ->placeholder('ID de usuario')
-                            ->required()
-                            ->numeric(),
-                        Forms\Components\TextInput::make('producto_id')
-                            ->placeholder('ID del producto')
-                            ->required()
-                            ->numeric(),
-                        Forms\Components\DateTimePicker::make('fecha')
-                            ->placeholder('Fecha de la entrada'),
-                        Forms\Components\TextInput::make('hora')
-                            ->placeholder('Hora de la entrada'),
-                        Forms\Components\TextInput::make('tipo_documento')
-                            ->placeholder('Tipo de documento')
-                            ->required(),
-                        Forms\Components\TextInput::make('numero_documento')
-                            ->placeholder('N\xC3\xBAmero de documento')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('cantidad')
-                            ->placeholder('Cantidad de productos')
-                            ->required()
-                            ->numeric(),
-                    ]),
-            ]);
-    }
+        $entradas = Entrada::selectRaw('MONTH(fecha) as mes, SUM(cantidad) as total')
+            ->groupByRaw('MONTH(fecha)')
+            ->orderByRaw('MONTH(fecha)')
+            ->pluck('total', 'mes');
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('producto_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('fecha')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('hora'),
-                Tables\Columns\TextColumn::make('tipo_documento'),
-                Tables\Columns\TextColumn::make('numero_documento')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('cantidad')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+        $salidas = Salida::selectRaw('MONTH(fecha) as mes, SUM(cantidad) as total')
+            ->groupByRaw('MONTH(fecha)')
+            ->orderByRaw('MONTH(fecha)')
+            ->pluck('total', 'mes');
 
-    public static function getRelations(): array
-    {
+        // Nombres de los meses (1-12)
+        $meses = [
+            1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr',
+            5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Ago',
+            9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic',
+        ];
+
+        $labels = array_values($meses);
+
+        $dataEntradas = [];
+        $dataSalidas = [];
+
+        foreach ($meses as $mesNum => $mesNombre) {
+            $dataEntradas[] = $entradas[$mesNum] ?? 0;
+            $dataSalidas[] = $salidas[$mesNum] ?? 0;
+        }
+
         return [
-            //
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'Entradas',
+                    'data' => $dataEntradas,
+                    'borderColor' => '#10b981',
+                    'backgroundColor' => '#10b981',
+                ],
+                [
+                    'label' => 'Salidas',
+                    'data' => $dataSalidas,
+                    'borderColor' => '#ef4444',
+                    'backgroundColor' => '#ef4444',
+                ],
+            ],
         ];
     }
 
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListEntradas::route('/'),
-            'create' => Pages\CreateEntrada::route('/create'),
-            'edit' => Pages\EditEntrada::route('/{record}/edit'),
-        ];
-    }
+    protected static string $chartType = 'line';
 }

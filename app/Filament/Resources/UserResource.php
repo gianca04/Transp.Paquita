@@ -17,28 +17,27 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $pluralLabel = 'Usuarios';
+
+    protected static ?string $modelLabel = 'Usuario';
+    protected static ?string $navigationIcon = 'heroicon-o-identification';
+    protected static ?string $navigationGroup = 'Proveedores y Usuarios';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Section::make('Datos del usuario')
+                ->columns(2)
                     ->schema([
+
                         Forms\Components\TextInput::make('name')
                             ->placeholder('Nombre de usuario')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
-                            ->placeholder('Correo electr\xC3\xB3nico')
+                            ->placeholder('Correo')
                             ->email()
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\DateTimePicker::make('email_verified_at')
-                            ->placeholder('Fecha de verificaci\xC3\xB3n'),
-                        Forms\Components\TextInput::make('password')
-                            ->placeholder('Contrase\xC3\xB1a')
-                            ->password()
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('nombre')
@@ -50,8 +49,15 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('tipo_documento')
                             ->placeholder('Tipo de documento'),
                         Forms\Components\TextInput::make('numero_documento')
-                            ->placeholder('N\xC3\xBAmero de documento')
+
+                            ->label('Número de documento de documento')
                             ->maxLength(255),
+                        Forms\Components\Select::make('roles')
+                            ->relationship('roles', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable(),
+
                     ]),
             ]);
     }
@@ -59,35 +65,60 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Se agrega un ícono general a la tabla, puedes usar el que necesites
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Nombre')
+                    ->icon('heroicon-o-user'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Correo Electrónico'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Fecha de Verificación')
+                    ->icon('heroicon-o-check-circle'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('nombre')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Nombre')
+                    ->icon('heroicon-o-identifier'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('apellido')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tipo_documento'),
+                    ->searchable()
+                    ->label('Apellido')
+                    ->icon('heroicon-o-user-circle'), // Icono para esta columna
+                Tables\Columns\TextColumn::make('tipo_documento')
+                    ->label('Tipo de Documento')
+                    ->icon('heroicon-o-document'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('numero_documento')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Número de Documento')
+                    ->icon('heroicon-o-id-card'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Fecha de Creación'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Fecha de Actualización')
+                    ->icon('heroicon-o-refresh'), // Icono para esta columna
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

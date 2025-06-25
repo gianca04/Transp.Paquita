@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('area_id');
-            $table->unsignedBigInteger('sub_area_id');
+            $table->unsignedBigInteger('sub_area_id')->nullable();
             $table->unsignedBigInteger('categoria_id');
             $table->unsignedBigInteger('marca_id');
             $table->unsignedBigInteger('proveedor_id');

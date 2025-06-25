@@ -17,7 +17,9 @@ class MarcaResource extends Resource
 {
     protected static ?string $model = Marca::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-swatch';
+
+    protected static ?string $navigationGroup = 'Gestión de Inventarios y Productos';
 
     public static function form(Form $form): Form
     {
@@ -26,15 +28,19 @@ class MarcaResource extends Resource
                 Forms\Components\Section::make('Datos de la marca')
                     ->schema([
                         Forms\Components\TextInput::make('nombre')
-                            ->placeholder('Nombre de la marca')
+                            ->placeholder('Nombre de la marca') // Placeholder text
                             ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('descripcion')
-                            ->placeholder('Descripci\xC3\xB3n de la marca')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-swatch'), // Prefix icon (you can adjust the icon based on your need)
+
+                        Forms\Components\Textarea::make('descripcion')
+                            ->placeholder('Descripción de la marca') // Placeholder text
+                            ->maxLength(255), // Prefix icon (adjust the icon accordingly)
                     ]),
             ]);
     }
+
+
 
     public static function table(Table $table): Table
     {
@@ -43,18 +49,41 @@ class MarcaResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Fecha de creación') // Etiqueta en español
+                    ->icon('heroicon-o-clock') // Icono (puedes elegir el que necesites)
+                    ->weight(1), // Peso para la columna
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Fecha de actualización') // Etiqueta en español
+                    ->icon('heroicon-o-refresh') // Icono (puedes elegir el que necesites)
+                    ->weight(1), // Peso para la columna
+
                 Tables\Columns\TextColumn::make('nombre')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Nombre') // Etiqueta en español
+                    ->icon('heroicon-o-identification') // Icono (puedes elegir el que necesites)
+                    ->weight(2), // Peso para la columna
+
                 Tables\Columns\TextColumn::make('descripcion')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Descripción') // Etiqueta en español
+                    ->icon('heroicon-o-document-text') // Icono (puedes elegir el que necesites)
+                    ->weight(2), // Peso para la columna
             ])
-            ->filters([
-                //
+            ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

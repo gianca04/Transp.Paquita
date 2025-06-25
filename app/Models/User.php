@@ -6,9 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
+    use HasRoles;
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -66,5 +68,10 @@ class User extends Authenticatable
         public function salidas()
     {
         return $this->hasMany(Salida::class, 'user_id');
+    }
+
+        public function getFullNameAttribute()
+    {
+        return $this->nombre . ' ' . $this->apellido . ' - ' . $this->numero_documento;
     }
 }

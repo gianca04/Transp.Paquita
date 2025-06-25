@@ -14,6 +14,9 @@ class SubArea extends Model
      *
      * @var array<int, string>
      */
+
+    protected $table = 'sub_areas';
+
     protected $fillable = [
         'area_id',
         'nombre',
@@ -29,7 +32,7 @@ class SubArea extends Model
         return $this->belongsTo(Area::class, 'area_id');
     }
 
-        public function productos()
+    public function productos()
     {
         return $this->hasMany(Producto::class);
     }
