@@ -6,6 +6,7 @@ use App\Models\Stock;
 use Filament\Tables;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class ProductosBajoMinimoTable extends TableWidget
 {
@@ -14,8 +15,8 @@ class ProductosBajoMinimoTable extends TableWidget
     protected function getTableQuery(): Builder
     {
         return Stock::query()
-            ->with('producto')
-            ->whereColumn('cantidad', '<=', 'minimo');
+            ->with('producto')  // Asegúrate de que la relación con 'producto' esté siendo cargada
+            ->where('cantidad', '<=', DB::raw('minimo'));  // Referencia la columna 'cantidad' de la tabla 'stocks'
     }
 
     protected function getTableColumns(): array
