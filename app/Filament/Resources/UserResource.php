@@ -28,7 +28,7 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Datos del usuario')
-                ->columns(2)
+                    ->columns(2)
                     ->schema([
 
                         Forms\Components\TextInput::make('name')
@@ -46,8 +46,13 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('apellido')
                             ->placeholder('Apellido')
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('tipo_documento')
-                            ->placeholder('Tipo de documento'),
+                        Forms\Components\Select::make('tipo_documento')
+                            ->placeholder('Tipo de documento')
+                            ->options([
+                                'DNI' => 'DNI',
+                                'RUC' => 'RUC',
+                                'Pasaporte' => 'Carnet de Extranjería',
+                            ]),
                         Forms\Components\TextInput::make('numero_documento')
 
                             ->label('Número de documento de documento')
@@ -74,15 +79,11 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->label('Correo Electrónico'), // Icono para esta columna
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->label('Fecha de Verificación')
-                    ->icon('heroicon-o-check-circle'), // Icono para esta columna
+
                 Tables\Columns\TextColumn::make('nombre')
                     ->searchable()
                     ->label('Nombre')
-                    ->icon('heroicon-o-identifier'), // Icono para esta columna
+                    ->icon('heroicon-o-identification'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('apellido')
                     ->searchable()
                     ->label('Apellido')
@@ -93,7 +94,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('numero_documento')
                     ->searchable()
                     ->label('Número de Documento')
-                    ->icon('heroicon-o-id-card'), // Icono para esta columna
+                    ->icon('heroicon-o-identification'), // Icono para esta columna
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

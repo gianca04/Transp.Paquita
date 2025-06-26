@@ -27,6 +27,7 @@ class DashboardPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+
             ->default()
             ->id('dashboard')
             ->path('dashboard')
@@ -105,7 +106,7 @@ class DashboardPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 StockPorAreaChart::class,
-                EntradaResource::class,
+
                 ProductosBajoMinimoTable::class,
 
             ])

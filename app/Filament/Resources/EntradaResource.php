@@ -1,62 +1,205 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Resources;
 
+use App\Filament\Resources\EntradaResource\Pages;
+use App\Filament\Resources\EntradaResource\RelationManagers;
 use App\Models\Entrada;
-use App\Models\Salida;
-use Filament\Widgets\LineChartWidget;
+use App\Models\User;
+use App\Models\Producto;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
-class EntradaResource extends LineChartWidget
+class EntradaResource extends Resource
 {
-    protected static ?string $heading = 'Entradas vs Salidas por Mes';
+    protected static ?string $model = Entrada::class;
 
-    protected function getData(): array
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-right-end-on-rectangle';
+    protected static ?string $navigationGroup = 'Gestión de Inventarios y Productos';
+
+    public static function form(Form $form): Form
     {
-        $entradas = Entrada::selectRaw('MONTH(fecha) as mes, SUM(cantidad) as total')
-            ->groupByRaw('MONTH(fecha)')
-            ->orderByRaw('MONTH(fecha)')
-            ->pluck('total', 'mes');
+        return $form
+            ->schema([
+                Forms\Components\Select::make('user_id')
+                    ->label('Usuario')
+                    ->placeholder('Usuario encargado')
+                    ->required()
+                    ->disabled()
+                    ->native(false)
+                    ->prefixIcon('heroicon-o-user')
+                    ->default(fn() => Auth::user()?->id)
+                    ->options(
+                        function (callable $get) {
+                            return User::query()
+                                ->select('id', 'name', 'nombre', 'apellido', 'numero_documento')
+                                ->when($get('search'), function ($query, $search) {
+                                    $query->where('name', 'like', "%{$search}%")
+                                        ->orWhere('nombre', 'like', "%{$search}%")
+                                        ->orWhere('apellido', 'like', "%{$search}%")
+                                        ->orWhere('numero_documento', 'like', "%{$search}%");
+                                })
+                                ->get()
+                                ->mapWithKeys(function ($user) {
+                                    return [$user->id => $user->full_name];
+                                })
+                                ->toArray();
+                        }
+                    ), // Icono de usuario para el campo de ID de usuario
 
-        $salidas = Salida::selectRaw('MONTH(fecha) as mes, SUM(cantidad) as total')
-            ->groupByRaw('MONTH(fecha)')
-            ->orderByRaw('MONTH(fecha)')
-            ->pluck('total', 'mes');
+                Forms\Components\Select::make('producto_id')
+                    ->label('Producto')
+                    ->placeholder('Información del producto')
+                    ->prefixIcon('heroicon-o-cube')->placeholder('ID de usuario')
+                    ->required()
+                    ->reactive()
+                    ->searchable()
+                    ->native(false)
+                    ->options(
+                        function (callable $get) {
+                            return Producto::query()
+                                ->select('id', 'nombre', 'descripcion')
+                                ->when($get('search'), function ($query, $search) {
+                                    $query->where('nombre', 'like', "%{$search}%")
+                                        ->orWhere('descripcion', 'like', "%{$search}%");
+                                })
+                                ->get()
+                                ->mapWithKeys(function ($producto) {
+                                    return [$producto->id => $producto->nombre];
+                                })
+                                ->toArray();
+                        }
+                    ), // Icono de cubo para el campo de ID del producto
 
-        // Nombres de los meses (1-12)
-        $meses = [
-            1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr',
-            5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Ago',
-            9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic',
-        ];
 
-        $labels = array_values($meses);
+                Forms\Components\DatePicker::make('fecha')
+                    ->placeholder('Fecha de la salida')
 
-        $dataEntradas = [];
-        $dataSalidas = [];
+                    ->default(now())
+                    ->prefixIcon('heroicon-o-calendar'), // Icono de calendario para la fecha
 
-        foreach ($meses as $mesNum => $mesNombre) {
-            $dataEntradas[] = $entradas[$mesNum] ?? 0;
-            $dataSalidas[] = $salidas[$mesNum] ?? 0;
-        }
+                Forms\Components\TextInput::make('hora')
+                    ->placeholder('Hora de salida')
+                    ->required()
+                    ->default(now())
+                    ->prefixIcon('heroicon-o-clock'),
+                Forms\Components\Select::make('tipo_documento')
+                    ->required()
+                    ->options(['boleta' => 'BOLETA', 'factura' => 'FACTURA', 'guia' => 'GUíA']),
 
+                Forms\Components\TextInput::make('numero_documento')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('cantidad')
+                    ->placeholder('Cantidad')
+                    ->required()
+                    ->numeric()
+                    ->minValue(1) // 🔒 Valor mínimo permitido
+                    ->prefixIcon('heroicon-o-plus')
+                    ->helperText('Debe ser mayor a 0'), // Adding hashtag icon for quantity field
+
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('user.full_name')
+                    ->label('Responsable') // Etiqueta en español
+                    ->sortable()
+                    ->icon('heroicon-s-user') // Icono (opcional)
+                    ->weight(1), // Peso de la columna
+                Tables\Columns\TextColumn::make('producto.nombre')
+                    ->numeric()
+                    ->sortable()
+                    ->label('Producto') // Etiqueta en español
+                    ->icon('heroicon-o-cube'),
+
+                Tables\Columns\TextColumn::make('cantidad')
+                    ->label('Ingresado') // Etiqueta en español
+                    ->numeric()
+                    ->sortable()
+                    ->icon('heroicon-o-plus') // Icono (opcional)
+                    ->weight(3), // Peso de la columna
+
+                Tables\Columns\TextColumn::make('producto.stock.cantidad')
+                    ->numeric()
+                    ->sortable()
+                    ->label('Cantidad total') // Etiqueta en español
+                    ->icon('heroicon-o-cube'),
+
+                Tables\Columns\TextColumn::make('fecha')
+                    ->label('Fecha') // Etiqueta en español
+                    ->date()
+                    ->dateTime('d/m/Y')
+                    ->sortable()
+                    ->icon('heroicon-s-calendar') // Icono (opcional)
+                    ->weight(4), // Peso de la columna
+
+                Tables\Columns\TextColumn::make('hora')
+                    ->label('Hora') // Etiqueta en español
+                    ->sortable()
+                    ->weight(5), // Peso de la columna
+
+                Tables\Columns\TextColumn::make('tipo_documento'),
+                Tables\Columns\TextColumn::make('numero_documento')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+                DateRangeFilter::make('created_at')
+                    ->label('Fecha de creación'),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
         return [
-            'labels' => $labels,
-            'datasets' => [
-                [
-                    'label' => 'Entradas',
-                    'data' => $dataEntradas,
-                    'borderColor' => '#10b981',
-                    'backgroundColor' => '#10b981',
-                ],
-                [
-                    'label' => 'Salidas',
-                    'data' => $dataSalidas,
-                    'borderColor' => '#ef4444',
-                    'backgroundColor' => '#ef4444',
-                ],
-            ],
+            //
         ];
     }
 
-    protected static string $chartType = 'line';
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListEntradas::route('/'),
+            'create' => Pages\CreateEntrada::route('/create'),
+            'edit' => Pages\EditEntrada::route('/{record}/edit'),
+        ];
+    }
 }

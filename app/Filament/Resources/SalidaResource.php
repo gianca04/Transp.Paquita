@@ -81,25 +81,7 @@ class SalidaResource extends Resource
                                         ->toArray();
                                 }
                             )
-                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                $productId = $get('producto_id');
-                                if ($productId) {
-                                    // Cargar empleado con usuario relacionado
-                                    $product = Producto::with('user')->find($productId);
-                                    if ($product) {
-                                        $set('document_type', $product->document_type);
-                                        $set('document_number', $product->document_number);
-                                        $set('address', $product->address);
-                                        $set('date_contract', $product->date_contract);
-                                        // Setear datos del usuario si existe
-                                        $set('user_email', $product->user?->email);
-                                        $set('user_is_active', $product->user?->is_active ? 'Activo' : 'Inactivo');
-                                    } else {
-                                        $set('user_email', null);
-                                        $set('user_is_active', null);
-                                    }
-                                }
-                            }), // Icono de cubo para el campo de ID del producto
+                            , // Icono de cubo para el campo de ID del producto
 
 
                         Forms\Components\TextInput::make('cantidad')
@@ -107,7 +89,6 @@ class SalidaResource extends Resource
                             ->required()
                             ->numeric()
                             ->minValue(1) // 🔒 Valor mínimo permitido
-                            ->prefixIcon('heroicon-o-plus')
                             ->helperText('Debe ser mayor a 0')
                             ->prefixIcon('heroicon-o-minus'), // Adding hashtag icon for quantity field
 
