@@ -4,10 +4,10 @@ namespace App\Filament\Widgets;
 
 use App\Models\Stock;
 use Filament\Tables;
-use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
-class ProductosBajoMinimoTable extends BaseWidget
+class ProductosBajoMinimoTable extends TableWidget
 {
     protected static ?string $heading = 'Productos con stock bajo el mínimo';
 
